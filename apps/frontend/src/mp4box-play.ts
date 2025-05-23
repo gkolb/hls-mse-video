@@ -1,32 +1,32 @@
-import assetUrl from "/frag_bunny.mp4";
-import MP4Box, { DataStream } from "mp4box";
+import MP4Box, { DataStream } from 'mp4box';
+const assetUrl = '/frag_bunny.mp4';
 
 export function mp4boxPlay() {
   console.log(assetUrl);
-  var video = document.querySelector("video") as HTMLVideoElement;
+  const video = document.querySelector('video') as HTMLVideoElement;
 
   const mediaSource = new MediaSource();
   video.src = URL.createObjectURL(mediaSource);
 
-  mediaSource.addEventListener("sourceended", () => {
-    console.log("MediaSource ended");
+  mediaSource.addEventListener('sourceended', () => {
+    console.log('MediaSource ended');
   });
-  mediaSource.addEventListener("sourceclose", () => {
-    console.error("MediaSource closed unexpectedly!");
+  mediaSource.addEventListener('sourceclose', () => {
+    console.error('MediaSource closed unexpectedly!');
   });
 
-  mediaSource.addEventListener("sourceopen", async () => {
+  mediaSource.addEventListener('sourceopen', async () => {
     const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
 
     if (!MediaSource.isTypeSupported(mimeCodec)) {
-      console.error("Unsupported MIME type or codec:", mimeCodec);
+      console.error('Unsupported MIME type or codec:', mimeCodec);
       return;
     }
 
     const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
 
-    sourceBuffer.addEventListener("error", (e) => {
-      console.error("SourceBuffer error:", e);
+    sourceBuffer.addEventListener('error', (e) => {
+      console.error('SourceBuffer error:', e);
     });
     try {
       const response = await fetch(assetUrl);
@@ -41,37 +41,39 @@ export function mp4boxPlay() {
 
       // 3. Set up promise to handle the onReady callback
       const fileInfo = await new Promise((resolve, reject) => {
-        mp4boxFile.onReady = (info) => {
+        mp4boxFile.onReady = (info: unknown) => {
           resolve(info);
         };
 
-        mp4boxFile.onError = (error) => {
+        mp4boxFile.onError = (error: Event) => {
           reject(error);
         };
-
+        interface MP4BoxBuffer extends ArrayBuffer {
+          fileStart: number;
+        }
         //   // 4. Parse the file
-        (buffer as any).fileStart = 0;
+        (buffer as MP4BoxBuffer).fileStart = 0;
         mp4boxFile.appendBuffer(buffer);
         mp4boxFile.flush();
       });
 
       // 5. Use the file info
-      console.log("MP4 File Info:", fileInfo);
+      console.log('MP4 File Info:', fileInfo);
 
-      sourceBuffer.addEventListener("updateend", () => {
-        if (!sourceBuffer.updating && mediaSource.readyState === "open") {
+      sourceBuffer.addEventListener('updateend', () => {
+        if (!sourceBuffer.updating && mediaSource.readyState === 'open') {
           mediaSource.endOfStream();
         }
       });
       sourceBuffer.appendBuffer(buffer);
       video.play();
     } catch (e) {
-      console.error("Error fetching or appending video data:", e);
+      console.error('Error fetching or appending video data:', e);
     }
   });
 }
 
-function parseMP4Boxes(buffer: any) {
+function parseMP4Boxes(buffer: ArrayBuffer) {
   // Create a DataStream (big-endian by default for MP4)
   const stream = new DataStream(buffer, 0, DataStream.BIG_ENDIAN);
 
@@ -82,7 +84,13 @@ function parseMP4Boxes(buffer: any) {
   }
 }
 
-function readBox(stream: any) {
+function readBox(stream: {
+  position: number;
+  readUint32: () => number;
+  readString: (pos: number) => string;
+  readUint64: () => number;
+  readUint8Array: (pos: number) => Uint8Array;
+}) {
   const startPos = stream.position;
 
   // Read box header (size + type)
