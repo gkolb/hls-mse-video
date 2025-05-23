@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Frontend</title>
-    <base href="/" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="/src/styles.css" />
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
   </head>
   <body>
-    <my-monorepo-root></my-monorepo-root>
+    <div id="app">
+      <div>
+        <h1>Vite + TypeScript + MSE</h1>
+        <div class="card">
+          <button id="simple" type="button"></button>
+          <button id="mp4box" type="button"></button>
+          <button id="byte" type="button"></button>
+        </div>
+        <div class="card">
+          <video id="video" controls />
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
