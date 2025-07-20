@@ -1,4 +1,4 @@
-const assetUrl = '/frag_bunny.mp4';
+const assetUrl = '/bbb_720p_fragmented.mp4';
 
 export function simpleMsePlay() {
   const video = document.querySelector('video') as HTMLVideoElement;
@@ -7,7 +7,7 @@ export function simpleMsePlay() {
   video.src = URL.createObjectURL(mediaSource);
 
   mediaSource.addEventListener('sourceopen', async () => {
-    const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+    const mimeCodec = 'video/mp4; codecs="avc1.64001F, mp4a.40.2"';
 
     if (!MediaSource.isTypeSupported(mimeCodec)) {
       console.error('Unsupported MIME type or codec:', mimeCodec);

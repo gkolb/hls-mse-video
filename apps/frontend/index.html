@@ -11,10 +11,14 @@
     <div id="app">
       <div>
         <h1>Vite + TypeScript + MSE</h1>
-        <div class="card">
-          <button id="simple" type="button"></button>
+        <div class="flex card">
+          <div className="flex flex-wrap items-center p-10 md:flex-row">
+            <button id="simple" type="button"></button>
+          </div>
+
           <button id="mp4box" type="button"></button>
           <button id="byte" type="button"></button>
+          <button id="parse" type="button"></button>
         </div>
         <div class="video-container">
           <video id="video" controls />

@@ -1,5 +1,5 @@
 import MP4Box, { DataStream } from 'mp4box';
-const assetUrl = '/frag_bunny.mp4';
+const assetUrl = '/bbb_720p_fragmented.mp4';
 
 export function mp4boxPlay() {
   console.log(assetUrl);
@@ -16,7 +16,7 @@ export function mp4boxPlay() {
   });
 
   mediaSource.addEventListener('sourceopen', async () => {
-    const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+    const mimeCodec = 'video/mp4; codecs="avc1.64001F, mp4a.40.2"';
 
     if (!MediaSource.isTypeSupported(mimeCodec)) {
       console.error('Unsupported MIME type or codec:', mimeCodec);
@@ -64,6 +64,10 @@ export function mp4boxPlay() {
         if (!sourceBuffer.updating && mediaSource.readyState === 'open') {
           mediaSource.endOfStream();
         }
+      });
+
+      sourceBuffer.addEventListener('update', () => {
+        console.log('Duration: ', video.duration);
       });
       sourceBuffer.appendBuffer(buffer);
       video.play();

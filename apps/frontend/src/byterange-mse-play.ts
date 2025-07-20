@@ -1,4 +1,5 @@
-const assetUrl = '/frag_bunny.mp4';
+const assetUrl = '/bbb_720p_fragmented.mp4';
+import { getMp4DurationFromArrayBuffer } from '../../../utils/mp4-parser';
 
 export function byteRangePlay() {
   const video = document.querySelector('video') as HTMLVideoElement;
@@ -8,7 +9,7 @@ export function byteRangePlay() {
     end: number;
   };
   // mp4info frag_bunny.mp4 | grep Codec
-  const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+  const mimeCodec = 'video/mp4; codecs="avc1.64001F, mp4a.40.2"';
   // Fetch 1MB byte segments at a time
   const segmentLength = 1024 * 1024;
   const targetBuffer = 10;
@@ -47,6 +48,7 @@ export function byteRangePlay() {
       video.addEventListener('timeupdate', checkBuffer);
       video.addEventListener('canplay', function () {
         video.play();
+        mediaSource.duration = 600;
       });
       fetchSegment();
     }
@@ -59,6 +61,7 @@ export function byteRangePlay() {
     });
   }
 
+  let tried = false;
   async function fetchSegment() {
     fetching = true;
     const next = segments.shift();
@@ -81,12 +84,19 @@ export function byteRangePlay() {
 
     const buffer = await response.arrayBuffer();
 
+    if (!tried) {
+      let duration = await getMp4DurationFromArrayBuffer(buffer);
+      console.log('DURATION: ', duration);
+      tried = true;
+    }
+
     await new Promise((resolve) => {
       sourceBuffer.addEventListener('updateend', resolve, { once: true });
       sourceBuffer.appendBuffer(buffer);
     });
 
     fetching = false;
+    checkBuffer();
   }
 
   function checkBuffer() {
